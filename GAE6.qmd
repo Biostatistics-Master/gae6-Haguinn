@@ -1,6 +1,6 @@
 ---
 title: "GAE6: Pea Aphids: multiple comparisons"
-author: "Your Name Here"
+author: "Haven Guinn"
 format: 
   html:
     embed-resources: true
@@ -83,7 +83,7 @@ I tested for differences among the un-injected control (Control), the injected b
 
 ## Results:
 
-Infected pea aphids exhibited distinctly larger hue angles and hence greener colors (@tbl-ANOVA, @fig-Aphids). This result supports the researchers' hypothesis that infection may lead to color change.
+Infected pea aphids exhibited distinctly larger hue angles and hence greener colors (@tbl-ANOVA, @fig-Aphids). This result supports the researchers' hypothesis that infection may lead to color change. Multiple comparisons were done because it was seen that only the infected group had a significant change in their hue when compared to both the uninfected and control group ( @tbl-Planned)
 
 ```{r}
 #| label: tbl-ANOVA
@@ -154,6 +154,43 @@ ggplot(aphids)+
     legend.position = "none"
   )
 
+```
+
+```{r}
+#| label: tbl-Planned
+#| tbl-cap: "Planned hypothesis tests"
+aphidMeans <- emmeans(aphidMod, "Treatment")
+aphidCont  <- tidy(contrast(
+  aphidMeans,
+  method = list(
+    #                          Un-Inj Un-INF INF
+    'control & Sah & Inf' = c(  -1,     1,    0), 
+    'Uninfected vs infected'   = c(  -1,  -1,  2)
+  ),
+  adjust = "none"
+  ))[,-c(1,3)]
+aphidCont$p.value <- format.pval(
+  aphidCont$p.value,
+  digits = 3,
+  eps = 0.001,
+  na.form = ''
+)
+kbl(
+  aphidCont,
+  col.names = c(
+    "Contrast",
+    "Estimate",
+    "SE",
+    "df",
+    "t",
+    "p"
+  ),
+  digits = c(0,3,3,0,3,3), 
+  align = "r",
+  table.attr = 'data-quarto-disable-processing = "true"'
+) |>
+  kable_classic(full = FALSE)
+                            
 ```
 
 ## References:
